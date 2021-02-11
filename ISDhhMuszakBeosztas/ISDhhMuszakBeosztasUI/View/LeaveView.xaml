@@ -1,0 +1,279 @@
+﻿<UserControl x:Class="ISDhhMuszakBeosztasUI.View.LeaveView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ISDhhMuszakBeosztasUI.View"
+             mc:Ignorable="d" 
+             xmlns:model="clr-namespace:ISDhhMuszakBeosztasDataAccess.Model;assembly=ISDhhMuszakBeosztasDataAccess"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"  
+             
+                TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+                TextElement.FontWeight="Regular"
+                TextElement.FontSize="13"
+                TextOptions.TextFormattingMode="Ideal"
+                TextOptions.TextRenderingMode="Auto"
+                Background="{DynamicResource MaterialDesignPaper}"
+                FontFamily="{DynamicResource MaterialDesignFont}"
+                       
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition  />
+            <ColumnDefinition  MinWidth="144"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition />
+            <ColumnDefinition />
+
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!--  Itt kilistázza az adatbázisban tárolt személyeket -->
+
+        <ComboBox  Margin="10" Grid.Row="0" Grid.Column="2"
+                x:Name="PeopleComboBox"          
+                SelectionChanged="PeopleComboBox_SelectionChanged">
+            <ComboBox.ItemTemplate>
+                <DataTemplate DataType="model:EmployeeModel">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding LastName,Mode=OneWay}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding FirstName,Mode=OneWay}"
+                         Margin="5 0 0 0"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+        <!--  első oszlop -->
+
+        <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+
+            </Grid.RowDefinitions>
+            <Viewbox VerticalAlignment="Top" HorizontalAlignment="Right" >
+                <Calendar x:Name="Calendar" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top" 
+                      FirstDayOfWeek="Monday" SelectionMode="MultipleRange"
+                          SelectedDatesChanged="Calendar_SelectedDatesChanged" >
+                    <Calendar.Resources>
+                        <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="{DynamicResource Primary700}" />
+                        <SolidColorBrush x:Key="MaterialDesignBodyLight" />
+                    </Calendar.Resources>
+                </Calendar>
+            </Viewbox>
+
+            <Grid Grid.Column="0" Grid.Row="1" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Margin="10" Text="A kijelölt napok:"/>
+                <ListView Grid.Row="1" Margin="10" ItemsSource="{Binding ElementName=Calendar, Path=SelectedDates}"/>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" >
+
+            <!--  Itt kilistázza az adatbázisban tárolt személyeket akik szabadságon vannak -->
+
+            <GroupBox Header="Távolléti lista" Margin="10">
+                <ListBox x:Name="Lbox_PeopleonLeave" />
+            </GroupBox>
+
+        </Grid>
+
+        <!--  harmadik oszlop -->
+
+        <Grid Grid.Column="2" Grid.Row="1" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <!--  stackpanelben megjelenik a szabadnapok száma  -->
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Column="0" Grid.Row="0" Margin="5" Text="C napok száma:"/>
+                    <TextBlock Grid.Column="1" Grid.Row="0" Margin="5" Width="50" x:Name="txt_canapokszáma"/>
+                    <TextBlock Grid.Column="0" Grid.Row="1" Margin="5" Text="Szabadnapok száma:"/>
+                    <TextBlock Grid.Column="1" Grid.Row="1" Margin="5" Width="50" x:Name="txt_szabadnapokszama"/>
+                    <TextBlock Grid.Column="0" Grid.Row="2" Margin="5" Text="Összes kivehető szabadnap:"/>
+                    <TextBlock Grid.Column="1" Grid.Row="2" Margin="5" Width="50" x:Name="txt_összkivehetö"/>
+
+                </Grid>
+                <ComboBox
+                     Style="{StaticResource MaterialDesignFilledComboBox}"
+                     x:Name="ReasonCB"            
+                     materialDesign:HintAssist.Hint="Távollét oka (kötelező mező)"
+                     Margin="10"
+                    IsEnabled="False"
+                    DropDownClosed="ReasonCombobox_SelectionChanged">
+                    <ComboBoxItem Content="C nap" />
+                    <ComboBoxItem Content="Fizetett szabadság" />
+                    <ComboBoxItem Content="Betegszabadság"/>
+                    <ComboBoxItem Content="Fizetés nélküli szabadság"/>
+                </ComboBox>
+            </StackPanel>
+            <GroupBox Grid.Row="1" Margin="10"
+                Header="Távolléti napok">
+                <ListBox  x:Name="TavolletiNapokLbox"  />
+            </GroupBox>
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Margin="10" Click="ButtonAddLeave_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Add"/>
+                        <TextBlock Text="Mentés" Margin="5 0 0 0"/>
+                    </StackPanel>
+                </Button>
+                <Button Margin="10" Click="ButtonDeleteLeaveDays_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Delete"/>
+                        <TextBlock Text="Törlés" Margin="5 0 0 0"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!--  Wrappanel  -->
+        <Grid Grid.Row="0" Grid.Column="3" Grid.RowSpan="3" Grid.ColumnSpan="2" Margin="10">
+            <WrapPanel Orientation="Vertical">
+                <materialDesign:Card Margin="10"
+                Background="{DynamicResource PrimaryHueMidBrush}"
+                Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                Width="200"
+                MaxHeight="250">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0">
+                            <TextBlock Margin="10"
+                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                                 C Napok
+                            </TextBlock>
+                            <Separator
+                             Style="{StaticResource MaterialDesignDarkSeparator}" />
+                        </StackPanel>
+                        <ListBox
+                           Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                           x:Name="WrapCnapok"
+                           Grid.Row="1"
+                           Margin="5"
+                           VerticalAlignment="Center" HorizontalAlignment="Left">
+                        </ListBox>
+                    </Grid>
+                </materialDesign:Card>
+                <materialDesign:Card Margin="10"
+                 Background="{DynamicResource PrimaryHueDarkBrush}"
+                Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                Width="200"
+                MaxHeight="300">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0">
+                            <TextBlock
+                              Margin="10"
+                             Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                             Szabadnapok
+                            </TextBlock>
+                            <Separator
+                             Style="{StaticResource MaterialDesignDarkSeparator}" />
+                        </StackPanel>
+                        <ListBox                           
+                            Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"                       
+                            x:Name="WrapSzabadnapok"
+                            Grid.Row="1"
+                            Margin="10"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left">
+                        </ListBox>
+                    </Grid>
+                </materialDesign:Card>
+                <materialDesign:Card Margin="10"
+                Background="{DynamicResource PrimaryHueMidBrush}"
+                Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                Width="200"
+                MaxHeight="250">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0">
+                            <TextBlock
+                                 Margin="10"
+                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                                  Betegszabadság
+                            </TextBlock>
+                            <Separator
+                             Style="{StaticResource MaterialDesignDarkSeparator}" />
+                        </StackPanel>
+                        <ListBox
+                           Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                           x:Name="WrapBetegszabadsag"
+                           Grid.Row="1"
+                           Margin="5"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left">
+                        </ListBox>
+                    </Grid>
+                </materialDesign:Card>
+
+                <materialDesign:Card Margin="10"
+                Background="{DynamicResource PrimaryHueDarkBrush}"
+                Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                Width="200"
+                MaxHeight="250">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0">
+                            <TextBlock
+                                 Margin="10"
+                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                                 Igazolatlan távollét
+                            </TextBlock>
+                            <Separator
+                             Style="{StaticResource MaterialDesignDarkSeparator}" />
+                        </StackPanel>
+                        <ListBox 
+                           Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                           x:Name="WrapIgazolatan"
+                           Grid.Row="1"
+                           Margin="5"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left">
+                        </ListBox>
+                    </Grid>
+                </materialDesign:Card>
+            </WrapPanel>
+
+        </Grid>
+
+    </Grid>
+
+</UserControl>
